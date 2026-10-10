@@ -18,5 +18,23 @@ class MultiHeadSelfAttention(nn.Module):
         K = self.key(x)
         V = self.value(x)
         
+        Q = self.split_heads(Q)
+        K = self.split_heads(K)
+        V = self.split_heads(V)
         return Q,K,V
+    
+    def split_heads(self,x):
+        batch_size,seq_length,d_model = x.shape
+        
+        x = x.reshape(
+            batch_size,
+            seq_length,
+            self.num_heads,
+            self.d_head
+        )
+        
+        x = x.transpose(1,2)
+        
+        return x 
+    
     
