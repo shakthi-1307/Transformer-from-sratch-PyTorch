@@ -8,8 +8,7 @@ attention = MultiHeadSelfAttention(
     num_heads=2
 )
 
-Q, K, V = attention(x)
+scores = attention(x)
 
-print(Q.shape)
-print(K.shape)
-print(V.shape)
+print("Scores shape:", scores.shape)
+print(scores)

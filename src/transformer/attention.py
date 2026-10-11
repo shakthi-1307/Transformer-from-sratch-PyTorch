@@ -21,7 +21,11 @@ class MultiHeadSelfAttention(nn.Module):
         Q = self.split_heads(Q)
         K = self.split_heads(K)
         V = self.split_heads(V)
-        return Q,K,V
+        
+        scores = torch.matmul(Q,K.transpose(-2,-1))
+        scores = scores/(self.d_head**0.5)
+        
+        return scores
     
     def split_heads(self,x):
         batch_size,seq_length,d_model = x.shape
