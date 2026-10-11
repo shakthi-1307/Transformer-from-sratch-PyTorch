@@ -25,7 +25,11 @@ class MultiHeadSelfAttention(nn.Module):
         scores = torch.matmul(Q,K.transpose(-2,-1))
         scores = scores/(self.d_head**0.5)
         
-        return scores
+        attention_weights = torch.softmax(scores,dim = -1)
+        
+        context = torch.matmul(attention_weights,V)
+        
+        return context
     
     def split_heads(self,x):
         batch_size,seq_length,d_model = x.shape
