@@ -12,6 +12,7 @@ class MultiHeadSelfAttention(nn.Module):
         self.query = nn.Linear(d_model,d_model)
         self.key = nn.Linear(d_model,d_model)
         self.value = nn.Linear(d_model,d_model)
+        self.output_projection = nn.Linear(d_model, d_model)
         
     def forward(self,x):
         Q = self.query(x)
@@ -27,9 +28,10 @@ class MultiHeadSelfAttention(nn.Module):
         
         attention_weights = torch.softmax(scores,dim = -1)
         
-        context = torch.matmul(attention_weights,V)
-        
-        return context
+        context = self.combine_heads(context)
+        output = self.output_projection(context)
+
+        return output
     
     def split_heads(self,x):
         batch_size,seq_length,d_model = x.shape
@@ -45,4 +47,16 @@ class MultiHeadSelfAttention(nn.Module):
         
         return x 
     
+    def combine_heads(self, x):
+        batch_size, num_heads, seq_length, d_head = x.shape
+
+        x = x.transpose(1, 2)
+
+        x = x.contiguous().reshape(
+            batch_size,
+            seq_length,
+            num_heads * d_head
+        )
+
+        return x
     
